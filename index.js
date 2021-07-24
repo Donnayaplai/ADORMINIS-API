@@ -20,6 +20,11 @@ app.use(cors());
 app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 
+//
+// const roomRouter = require("./routes/room");
+// app.use("/room", roomRouter);
+//
+
 app.use("/api", api);
 //Router
 // app.get("/", roomRouter);
