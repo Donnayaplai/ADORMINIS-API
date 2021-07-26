@@ -2,27 +2,28 @@ const { DataTypes } = require("Sequelize");
 const Room = require('../models/room');
 const RoomStatus = require('../models/roomStatus');
 
-Room.hasMany(RoomStatus, { foreignKey: 'ROOMID' })
+Room.hasMany(RoomStatus, {
+  as: 'ALLROOMSTATUS',
+  foreignKey: 'ROOMID'
+})
 
-exports.findAll = (dormID) => {
-
-  Room.findAll({
+const ROOM_FINDALL = async (dormID) => {
+  const data = await Room.findAll({
     attributes: ['ROOMID', 'ROOMNO', 'FLOOR', 'BUILDINGID', 'ROOMTYPEID'],
+    as: "ROOM"
+    ,
     include: [{
       model: RoomStatus,
-      attributes: ['STATUS'],
+      as: "ALLROOMSTATUS",
+      attributes: ['STATUS']
+      ,
       where: {
         DORMID: dormID
       }
     }]
   })
-    .then(data => {
-      return data;
-    })
-    // .catch(err => {
-    //   res.status(500).send({
-    //     message:
-    //       err.message
-    //   });
-    // });
-};
+  // console.log(data, "comtroller")
+  return data;
+}
+
+module.exports = { ROOM_FINDALL }
