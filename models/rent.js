@@ -17,7 +17,7 @@ RENT.init({
     CONTRACTOFRENTID: {
         type: DataTypes.INTEGER
     },
-    RESIDENTID: {
+    USERID: {
         type: DataTypes.INTEGER
     },
     ROOMID: {

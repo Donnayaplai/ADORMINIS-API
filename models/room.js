@@ -14,6 +14,9 @@ ROOM.init({
     FLOOR: {
         type: DataTypes.INTEGER
     },
+    STATUS: {
+        type: DataTypes.STRING
+    },
     BUILDINGID: {
         type: DataTypes.INTEGER
     },

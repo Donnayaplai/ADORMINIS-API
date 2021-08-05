@@ -1,27 +1,27 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../config/db');
 
-class ALLROOMSTATUS extends Model { }
+class BUILDING extends Model { }
 
-ALLROOMSTATUS.init({
-    ROOMID: {
+BUILDING.init({
+    BUILDINGID: {
         type: DataTypes.INTEGER,
         primaryKey: true
     },
-    DORMID: {
+    BUILDINGNAME: {
+        type: DataTypes.STRING
+    },
+    NUMOFFLOOR: {
         type: DataTypes.INTEGER
     },
-    ROOMNO: {
-        type: DataTypes.STRING
-    },
-    STATUS: {
-        type: DataTypes.STRING
+    DORMID: {
+        type: DataTypes.INTEGER
     }
 }, {
     freezeTableName: true,
     timestamps: false,
     sequelize,
-    modelName: 'ALLROOMSTATUS'
+    modelName: 'BUILDING'
 });
 
-module.exports = ALLROOMSTATUS;
+module.exports = BUILDING;
