@@ -35,6 +35,9 @@ USER.init(
     PERSONALCODE: {
       type: DataTypes.STRING,
     },
+    ROLEID: {
+      type: DataTypes.INTEGER,
+    },
   },
   {
     freezeTableName: true,
