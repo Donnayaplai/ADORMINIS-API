@@ -1,17 +1,25 @@
 const { DataTypes } = require("Sequelize");
-const Resident = require('../models/resident');
+const User = require('../models/user');
 const Rent = require('../models/rent')
 
-Resident.hasMany(Rent, { foreignKey: 'RESIDENTID' })
+User.hasMany(Rent, {
+  foreignKey: 'USERID',
+  as: "RENT"
+})
 
-const getResidentInfo = Resident.findOne({
-  include: [{
-    model: Rent,
-    attributes: ['CHECKINDATE', 'CHECKOUTDATE', 'CONTRACTOFRENTID', 'ROOMID'],
-    where: {
-      ROOMID: 130000007 //hard code
-    }
-  }]
-});
+const RESIDENT_INFO = async (roomID) => {
+  const data = await User.findOne({
+    include: [{
+      model: Rent,
+      attributes: ['CHECKINDATE', 'CHECKOUTDATE', 'CONTRACTOFRENTID', 'ROOMID'],
+      as: "RENT",
+      where: {
+        ROOMID: roomID
+      }
+    }]
+  });
+  // console.log(data, "controller")
+  return data;
+}
 
-module.exports = { getResidentInfo };
+module.exports = { RESIDENT_INFO }
