@@ -8,13 +8,14 @@ User.hasMany(Rent, {
 })
 
 const RESIDENT_INFO = async (roomID) => {
-  const data = await User.findOne({
+  const data = await User.findAll({
     include: [{
       model: Rent,
       attributes: ['CHECKINDATE', 'CHECKOUTDATE', 'CONTRACTOFRENTID', 'ROOMID'],
       as: "RENT",
       where: {
-        ROOMID: roomID
+        ROOMID: roomID,
+        CHECKOUTDATE: null
       }
     }]
   });
