@@ -20,7 +20,6 @@ const ROOM_FINDALL = async (dormID) => {
       }
     }]
   })
-  // console.log(data, "controller")
   return data;
 }
 

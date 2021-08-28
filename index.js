@@ -23,11 +23,12 @@ app.get('/', (req, res) => {
 app.use('/api/users', require('./routes/api/user'));
 app.use('/api/auth', require('./routes/api/auth'));
 //Room
-// const roomRouter = require('./routes/room');
-// app.use('/room', roomRouter);
-// app.get('/', roomRouter);
+const roomRouter = require('./routes/room');
+app.use('/room', roomRouter);
+app.get('/', roomRouter);
 // Test PM: http://localhost:3001/room/100000003
-// http://localhost:3001/room/100000003/130000001
+// Resdent info: http://localhost:3001/room/100000003/130000001
+// Add resident: http://localhost:3001/room/100000003/130000001/0/addRes
 
 //User
 // const userRouter = require('./routes/user');
