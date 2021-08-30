@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const { check, validationResult } = require('express-validator');
-// const { USER_REGISTER } = require('../controller/user');
+const { FIND_EMAIL, USER_REGISTER } = require('../controller/user');
 
 // @desc Register user
 // @access Public
@@ -28,7 +28,7 @@ router.post(
     //See if user exists
     const { fname, lname, telno, gender, IDCardNo, email, password } = req.body;
     try {
-      let user = await User.findOne({ email });
+      let user = await FIND_EMAIL(email);
       if (user) {
         return res
           .status(400)
@@ -44,6 +44,7 @@ router.post(
         email,
         password,
       });
+      console.log(user, "<<<user")
       //Encrypt password
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(password, salt);

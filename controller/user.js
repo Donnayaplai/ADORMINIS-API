@@ -1,43 +1,57 @@
-// const User = require('../models/user');
-// const Role = require('../models/role');
-// const jwt = require('jsonwebtoken');
-// const bcrypt = require('bcryptjs');
-// User.belongsTo(Role);
+const User = require('../models/user');
+const Role = require('../models/role');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
-// async function USER_REGISTER(req, res) {
-//   const { fname, lname, telno, gender, IDCardNo, email, password } = req.body;
-//   try {
-//     let user = await User.findOne({ email });
-//     if (user) {
-//       return res.status(400).json({ errors: [{ msg: 'User already exist' }] });
-//     }
-//     //Encrypt password
-//     const salt = await bcrypt.genSalt(10);
-//     user.password = await bcrypt.hash(password, salt);
+User.belongsTo(Role);
 
-//     await User.create({
-//       FNAME: fname,
-//       LNAME: lname,
-//       TELNO: telno,
-//       GENDER: gender,
-//       IDCARDNO: IDCardNo,
-//       EMAIL: email,
-//       PASSWORD: password,
-//     });
+const FIND_EMAIL = async (email) => {
+    const emails = await User.findOne({
+        attributes: ['EMAIL'],
+        where: {
+            EMAIL: email
+        }
+    })
+    // console.log(emails.dataValues.EMAIL, "<<< FIND_EMAIL")
+    return emails.dataValues.EMAIL;
+}
 
-//     //Return jsonwebtoken
-//     const payload = {
-//       User: {
-//         USERID: User.USERID,
-//       },
-//     };
-//     jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 360000000 });
-//   } catch (err) {
-//     console.log(err.message);
-//     res.status(500).send('Server error');
-//   }
-// }
-// module.exports = { USER_REGISTER };
+async function USER_REGISTER(req, res) {
+    const { fname, lname, telno, gender, IDCardNo, email, password } = req.body;
+    try {
+        let user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ errors: [{ msg: 'User already exist' }] });
+        }
+        //Encrypt password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+
+        await User.create({
+            FNAME: fname,
+            LNAME: lname,
+            TELNO: telno,
+            GENDER: gender,
+            IDCARDNO: IDCardNo,
+            EMAIL: email,
+            PASSWORD: password,
+        });
+
+        //Return jsonwebtoken
+        const payload = {
+            User: {
+                USERID: User.USERID,
+            },
+        };
+        jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 360000000 });
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).send('Server error');
+    }
+}
+
+module.exports = { FIND_EMAIL, USER_REGISTER };
+
 // exports.create = (req, res) => {
 //   const user = {
 //     FNAME: req.body.fname ? req.body.fname : false,
