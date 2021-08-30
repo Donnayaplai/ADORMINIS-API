@@ -11,7 +11,7 @@ sequelize.sync();
 
 //Init Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
   res.json({
@@ -23,15 +23,15 @@ app.get('/', (req, res) => {
 
 //Room
 // const roomRouter = require('./routes/room');
-// app.use('/room', roomRouter);
+// app.use('/api/dormitory', roomRouter);
 // app.get('/', roomRouter);
 // Test PM: http://localhost:3001/room/100000003
 // Resdent info: http://localhost:3001/room/100000003/130000001
 // Add resident: http://localhost:3001/room/100000003/130000001/0/addRes
 
 //User
-const userRouter = require('./routes/user');
-app.use('/register', userRouter);
+app.use('/api/users', require('./routes/user'));
+// app.use('/api/auth', require('./routes/auth'));
 
 //Dorm
 // const dormRouter = require('./routes/dorm');

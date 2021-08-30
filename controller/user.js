@@ -1,43 +1,43 @@
-const User = require('../models/user');
-const Role = require('../models/role');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-User.belongsTo(Role);
+// const User = require('../models/user');
+// const Role = require('../models/role');
+// const jwt = require('jsonwebtoken');
+// const bcrypt = require('bcryptjs');
+// User.belongsTo(Role);
 
-async function USER_REGISTER(req, res) {
-  const { fname, lname, telno, gender, IDCardNo, email, password } = req.body;
-  try {
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ errors: [{ msg: 'User already exist' }] });
-    }
-    //Encrypt password
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
+// async function USER_REGISTER(req, res) {
+//   const { fname, lname, telno, gender, IDCardNo, email, password } = req.body;
+//   try {
+//     let user = await User.findOne({ email });
+//     if (user) {
+//       return res.status(400).json({ errors: [{ msg: 'User already exist' }] });
+//     }
+//     //Encrypt password
+//     const salt = await bcrypt.genSalt(10);
+//     user.password = await bcrypt.hash(password, salt);
 
-    await User.create({
-      FNAME: fname,
-      LNAME: lname,
-      TELNO: telno,
-      GENDER: gender,
-      IDCARDNO: IDCardNo,
-      EMAIL: email,
-      PASSWORD: password,
-    });
+//     await User.create({
+//       FNAME: fname,
+//       LNAME: lname,
+//       TELNO: telno,
+//       GENDER: gender,
+//       IDCARDNO: IDCardNo,
+//       EMAIL: email,
+//       PASSWORD: password,
+//     });
 
-    //Return jsonwebtoken
-    const payload = {
-      User: {
-        USERID: User.USERID,
-      },
-    };
-    jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 360000000 });
-  } catch (err) {
-    console.log(err.message);
-    res.status(500).send('Server error');
-  }
-}
-module.exports = { USER_REGISTER };
+//     //Return jsonwebtoken
+//     const payload = {
+//       User: {
+//         USERID: User.USERID,
+//       },
+//     };
+//     jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 360000000 });
+//   } catch (err) {
+//     console.log(err.message);
+//     res.status(500).send('Server error');
+//   }
+// }
+// module.exports = { USER_REGISTER };
 // exports.create = (req, res) => {
 //   const user = {
 //     FNAME: req.body.fname ? req.body.fname : false,
