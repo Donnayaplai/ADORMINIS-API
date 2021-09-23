@@ -11,7 +11,7 @@ const USER_INFO = async (personalCode) => {
     return user;
 }
 
-const getUserID = async (personalCode) => {
+const getUserByCode = async (personalCode) => {
     const userID = await User.findOne({
         attributes: ['USERID'],
         where: {
@@ -25,9 +25,9 @@ const getUserID = async (personalCode) => {
 const ADD_USER = async (req, res) => {
     // console.log(req.body, "<<<addUser")
     const rent = {
-        CHECKINDATE: req.body.checkInDate ? req.body.checkInDate : false,
-        CONTRACTOFRENTID: req.body.contractOfRentID ? req.body.contractOfRentID : false,
-        USERID: await getUserID(req.params.personalCode),
+        CHECKINDATE: req.body.checkInDate ? req.body.checkInDate : null,
+        CONTRACTOFRENTID: req.body.contractOfRentID ? req.body.contractOfRentID : null,
+        USERID: await getUserByCode(req.body.personalCode),
         ROOMID: req.params.roomID
     };
     
@@ -44,4 +44,4 @@ const ADD_USER = async (req, res) => {
         });
 }
 
-module.exports = { USER_INFO, getUserID, ADD_USER }
+module.exports = { USER_INFO, getUserID: getUserByCode, ADD_USER }
