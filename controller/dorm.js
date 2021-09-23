@@ -1,20 +1,31 @@
 require("Sequelize");
 const dorms = require('../models/dorm');
 
-exports.create = (req, res) => {
+const CREATE_DORM = async (req, res) => {
+
+    // Generate code
+    const genCode = async () => {
+        var code = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        for (var i = 0; i < 6; i++) {
+            code += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return code;
+    }
 
     const dorm = {
-        DORMNAMETH: req.body.dormNameTH ? req.body.dormNameTH : false,
-        DORMNAMEENG: req.body.dormNameENG ? req.body.dormNameENG : false,
-        NUMOFBUILDING: req.body.numOfBuylding ? req.body.numOfBuylding : false,
-        ADDRESS: req.body.address ? req.body.address : false,
-        PROVINCE: req.body.province ? req.body.province : false,
-        STREET: req.body.street ? req.body.street : false,
-        POSTCODE: req.body.postCode ? req.body.postCode : false,
-        TELNO: req.body.telNo ? req.body.telNo : false,
-        SUBDISTRICT: req.body.subdistrict ? req.body.subdistrict : false,
-        DISTRICT: req.body.district ? req.body.district : false,
-        DORMCODE: req.body.dormCode ? req.body.dormCode : false
+        DORMNAMETH: req.body.dormNameTH ? req.body.dormNameTH : null,
+        DORMNAMEENG: req.body.dormNameENG ? req.body.dormNameENG : null,
+        NUMOFBUILDING: req.body.numOfBuylding ? req.body.numOfBuylding : null,
+        ADDRESS: req.body.address ? req.body.address : null,
+        PROVINCE: req.body.province ? req.body.province : null,
+        STREET: req.body.street ? req.body.street : null,
+        POSTCODE: req.body.postCode ? req.body.postCode : null,
+        TELNO: req.body.telNo ? req.body.telNo : null,
+        SUBDISTRICT: req.body.subdistrict ? req.body.subdistrict : null,
+        DISTRICT: req.body.district ? req.body.district : null,
+        DORMCODE: await genCode()
     };
 
     dorms.create(dorm)
@@ -29,3 +40,5 @@ exports.create = (req, res) => {
         });
 
 };
+
+module.exports = { CREATE_DORM };
