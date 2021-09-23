@@ -5,29 +5,39 @@ const bcrypt = require('bcryptjs');
 
 User.belongsTo(Role);
 
-const FIND_EMAIL = async (email) => {
-    const emails = await User.findOne({
-        attributes: ['EMAIL'],
-        where: {
-            EMAIL: email
-        }
-    })
-    // console.log(emails.dataValues.EMAIL, "<<< FIND_EMAIL")
-    return emails.dataValues.EMAIL;
-}
+// const FIND_EMAIL = async (email) => {
+//     const emails = await User.findOne({
+//         attributes: ['EMAIL'],
+//         where: {
+//             EMAIL: email
+//         }
+//     })
+//     console.log(emails.dataValues.EMAIL, "<<< FIND_EMAIL")
+//     if (FIND_EMAIL) {
+//         return emails.dataValues.EMAIL;
+//     } else
+//         return null;
+// }
 
 async function USER_REGISTER(req, res) {
-    const { fname, lname, telno, gender, IDCardNo, email, password } = req.body;
+    var { fname, lname, telno, gender, IDCardNo, email, password } = req.body;
     try {
-        let user = await User.findOne({ email });
+        let user = await User.findOne({
+            attributes: ['EMAIL'],
+            where: {
+                EMAIL: email
+            }
+        });
+        console.log({ fname, lname, telno, gender, IDCardNo, email, password }, "<<<user")
         if (user) {
             return res.status(400).json({ errors: [{ msg: 'User already exist' }] });
         }
         //Encrypt password
         const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
-
-        await User.create({
+        password = await bcrypt.hash(password, salt);
+        console.log(password, "<<<pass")
+        console.log({ fname, lname, telno, gender, IDCardNo, email, password }, "<<<user2")
+        let newUser = await User.create({
             FNAME: fname,
             LNAME: lname,
             TELNO: telno,
@@ -36,21 +46,27 @@ async function USER_REGISTER(req, res) {
             EMAIL: email,
             PASSWORD: password,
         });
-
+        console.log(newUser)
         //Return jsonwebtoken
         const payload = {
-            User: {
-                USERID: User.USERID,
-            },
+            User: await User.findOne({
+                attributes: ['USERID'],
+                where: {
+                    EMAIL: email
+                }
+            })
         };
-        jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 360000000 });
+        console.log(payload)
+        // jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 360000000 });
+        let token = jwt.sign(payload, "sectret");
+        console.log(token)
     } catch (err) {
         console.log(err.message);
         res.status(500).send('Server error');
     }
 }
 
-module.exports = { FIND_EMAIL, USER_REGISTER };
+module.exports = { USER_REGISTER };
 
 // exports.create = (req, res) => {
 //   const user = {
