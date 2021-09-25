@@ -1,10 +1,14 @@
 const { DataTypes } = require("Sequelize");
-const User = require('../models/user');
-const Rents = require('../models/rent');
-const Room = require('../models/room');
+const db = require('../config/db');
+const users = require('../models/user');
+const rents = require('../models/rent');
+const rooms = require('../models/room');
+const roomType = require('../models/roomType');
+const CoR = require('../models/contractOfRent');
+const setting = require('../models/setting');
 
-const USER_INFO = async (personalCode) => {
-    const user = await User.findOne({
+const getUserInfoByCode = async (personalCode) => {
+    const user = await users.findOne({
         where: {
             PERSONALCODE: personalCode
         }
@@ -13,30 +17,78 @@ const USER_INFO = async (personalCode) => {
 }
 
 const getUserByCode = async (personalCode) => {
-    const userID = await User.findOne({
+    const userID = await users.findOne({
         attributes: ['USERID'],
         where: {
             PERSONALCODE: personalCode
         }
     });
-    // console.log(userID.dataValues.USERID, "<<<getUserID")
     return userID.dataValues.USERID;
 }
 
-const ADD_USER = async (req, res) => {
-    // console.log(req.body, "<<<addUser")
+const getRoomPriceByRoomID = async (roomID) => {
+    const roomPrice = await db.query(
+        `SELECT PRICE 
+        FROM ROOM r JOIN ROOM_TYPE rt
+        ON r.ROOMTYPEID = rt.ROOMTYPEID
+        WHERE r.ROOMID = ?
+        `,
+        {
+            replacements: [roomID],
+            type: db.QueryTypes.SELECT
+        }
+    )
+    return roomPrice[0].PRICE;
+}
+// console.log("roomPrice: ", roomPrice[0].PRICE);
 
-    const todayDate = new Date().toISOString().slice(0, 10);
+const getCoRID = async () => {
+    const id = await db.query(
+        `SELECT MAX(CONTRACTOFRENTID) AS CONTRACTOFRENTID
+        FROM CONTRACT_OF_RENT
+        `,
+        {
+            type: db.QueryTypes.SELECT
+        }
+    )
+    return id[0].CONTRACTOFRENTID;
+}
+// console.log("id: ", id[0].CONTRACTOFRENTID);
+
+const addUserToRoom = async (req, res) => {
+
     const roomID = req.params.roomID;
+    const dormID = req.params.dormID;
+    const code = req.body.personalCode;
+
+    const oldCoRID = await getCoRID()
+    const newCoRID = Number(oldCoRID) + 1
+    const roomPrice = await getRoomPriceByRoomID(roomID)
+    const multPrePaid = await setting.findOne({
+        attributes: ['MULTPREPAID'],
+        where: {
+            DORMID: dormID
+        }
+    })
+    // console.log("newCoRID: ", newCoRID);
+    // console.log("roomPrice: ", roomPrice);
+    // console.log("multPrePaid: ", multPrePaid.dataValues.MULTPREPAID);
+
+    const cor = {
+        CONTRACTOFRENTID: newCoRID,
+        GUARANTEEFEE: roomPrice,
+        PREPAID: roomPrice * multPrePaid.dataValues.MULTPREPAID
+    }
+    // console.log("cor: ", cor);
 
     const rent = {
-        CHECKINDATE: todayDate,
-        // CONTRACTOFRENTID: req.body.contractOfRentID ? req.body.contractOfRentID : null,
-        USERID: await getUserByCode(req.body.personalCode),
+        CONTRACTOFRENTID: newCoRID,
+        USERID: await getUserByCode(code),
         ROOMID: roomID
     };
+    // console.log("rent: ", rent);
 
-    Rents.create(rent)
+    CoR.create(cor)
         .then(data => {
             return data;
         })
@@ -48,7 +100,52 @@ const ADD_USER = async (req, res) => {
             }
         });
 
-    Room.update({ STATUS: 0 }, {
+    rents.create(rent)
+        .then(data => {
+            return data;
+        })
+        .catch(err => {
+            console.log(err)
+            return {
+                message:
+                    err.message
+            }
+        });
+
+    return { newCoRID }
+}
+
+const addCoRDetail = async (req, res) => {
+
+    const roomID = req.params.roomID;
+    // const dormID = req.params.dormID;
+    const newCoRID = req.params.newCoRID;
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
+    // const checkInDate = req.body.checkInDate;
+
+    const cor = {
+        STARTDATE: startDate,
+        ENDDATE: endDate
+    }
+
+    CoR.update(cor, {
+        where: {
+            CONTRACTOFRENTID: newCoRID
+        }
+    })
+        .then(data => {
+            return data;
+        })
+        .catch(err => {
+            console.log(err)
+            return {
+                message:
+                    err.message
+            }
+        });
+
+    rooms.update({ STATUS: 0 }, {
         where: {
             ROOMID: roomID
         }
@@ -63,6 +160,7 @@ const ADD_USER = async (req, res) => {
                     err.message
             }
         });
+
 }
 
-module.exports = { USER_INFO, getUserID: getUserByCode, ADD_USER }
+module.exports = { getUserInfoByCode, addUserToRoom, addCoRDetail }
