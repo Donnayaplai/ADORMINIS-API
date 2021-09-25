@@ -55,12 +55,27 @@ const getCoRID = async () => {
 }
 // console.log("id: ", id[0].CONTRACTOFRENTID);
 
+const getDormIDByBuildingID = async (buildingID) => {
+    const dormID = await db.query(
+        `SELECT DORMID 
+        FROM BUILDING
+        WHERE BUILDINGID = ?
+        `,
+        {
+            replacements: [buildingID],
+            type: db.QueryTypes.SELECT
+        }
+    )
+    return dormID[0].DORMID;
+}
+
 const addUserToRoom = async (req, res) => {
 
     const roomID = req.params.roomID;
-    const dormID = req.params.dormID;
+    const buildingID = req.params.buildingID;
     const code = req.body.personalCode;
 
+    const dormID = await getDormIDByBuildingID(buildingID)
     const oldCoRID = await getCoRID()
     const newCoRID = Number(oldCoRID) + 1
     const roomPrice = await getRoomPriceByRoomID(roomID)
@@ -112,7 +127,7 @@ const addUserToRoom = async (req, res) => {
             }
         });
 
-    return { newCoRID }
+    return { roomID, dormID, newCoRID }
 }
 
 const addCoRDetail = async (req, res) => {
