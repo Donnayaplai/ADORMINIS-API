@@ -1,44 +1,40 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { FIND_BUILDINGS, FIND_ROOMS } = require("../controller/room");
-const { RESIDENT_INFO } = require("../controller/residentInfo");
-const rent = require("../controller/rent")
+const { FIND_ROOMS } = require('../controller/room');
+const rent = require('../controller/rent');
 
-//Get buildings
-router.get("/:dormID", async (req, res) => {
-  const dormID = req.params.dormID;
-  const buildings = await FIND_BUILDINGS(dormID);
-  res.json(buildings)
-});
-
-//Get rooms
-router.get("/:dormID/:buildingID", async (req, res) => {
+//Get all room in building
+router.get('/all/:buildingID', async (req, res) => {
   const buildingID = req.params.buildingID;
   const rooms = await FIND_ROOMS(buildingID);
-  res.json(rooms)
+  res.json(rooms);
 });
 
-//Resident info
-router.get("/:dormID/:buildingID/:roomID", async (req, res) => {
-  const roomID = req.params.roomID;
-  const residentInfo = await RESIDENT_INFO(roomID);
-  res.json(residentInfo)
-});
-
-//Check user info
-router.get("/:dormID/:buildingID/:roomID/:personalCode/addRes", async (req, res) => {
+//Check user info// get user info in Profile page
+router.get('/:personalCode', async (req, res) => {
   const personalCode = req.params.personalCode;
-  const user = await rent.USER_INFO(personalCode);
-  res.json(user)
+  const user = await rent.getUserInfoByCode(personalCode);
+  res.json(user);
 });
 
-//Add user
-router.post("/:dormID/:dormID/:roomID/:personalCode/addRes", async (req, res) => {
-  req.params.personalCode;
+//Add resident to specific room
+router.post('/:buildingID/:roomID', async (req, res) => {
+  req.body.personalCode;
   req.params.roomID;
-  console.log("test")
-  const addResident = await rent.ADD_USER(req, res);
-  res.json(addResident)
+  req.params.buildingID;
+  console.log('test', req.body.personalCode, req.params.roomID);
+  const addResident = await rent.addUserToRoom(req, res);
+  res.json(addResident);
+});
+
+//Insert addtional info in Profile page
+router.post('/addRes/:dormID/:roomID/:newCoRID', async (req, res) => {
+  req.params.dormID;
+  req.params.roomID;
+  req.params.newCoRID;
+  console.log('Test Add CoR');
+  const addCoRDetail = await rent.addCoRDetail(req, res);
+  res.json(addCoRDetail);
 });
 
 module.exports = router;
