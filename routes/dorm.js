@@ -1,7 +1,8 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const dorm = require("../controller/dorm")
+const dorm = require('../controller/dorm');
 
-router.post("/", dorm.CREATE_DORM);
+//Create new dormitory
+router.post('/', dorm.CREATE_DORM);
 
 module.exports = router;
