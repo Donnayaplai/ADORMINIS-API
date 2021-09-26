@@ -10,11 +10,11 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// app.get('/', (req, res) => {
-//   res.json({
-//     message: 'API Running',
-//   });
-// });
+app.get('/', (req, res) => {
+  res.json({
+    message: 'API Running',
+  });
+});
 
 //Define Route
 
