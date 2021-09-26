@@ -1,4 +1,4 @@
-const { DataTypes } = require("Sequelize");
+require('Sequelize');
 const Building = require('../models/building');
 const Room = require('../models/room');
 
@@ -28,19 +28,19 @@ const Room = require('../models/room');
 const FIND_BUILDINGS = async (dormID) => {
   const buildings = await Building.findAll({
     where: {
-      DORMID: dormID
-    }
-  })
+      DORMID: dormID,
+    },
+  });
   return buildings;
-}
+};
 
 const FIND_ROOMS = async (buildingID) => {
   const rooms = await Room.findAll({
     where: {
-      BUILDINGID: buildingID
-    }
-  })
+      BUILDINGID: buildingID,
+    },
+  });
   return rooms;
-}
+};
 
-module.exports = { FIND_BUILDINGS, FIND_ROOMS }
+module.exports = { FIND_BUILDINGS, FIND_ROOMS };
