@@ -20,75 +20,56 @@ User.belongsTo(Role);
 // }
 
 async function USER_REGISTER(req, res) {
-    var { fname, lname, telno, gender, IDCardNo, email, password } = req.body;
-    try {
-        let user = await User.findOne({
-            attributes: ['EMAIL'],
-            where: {
-                EMAIL: email
-            }
-        });
-        console.log({ fname, lname, telno, gender, IDCardNo, email, password }, "<<<user")
-        if (user) {
-            return res.status(400).json({ errors: [{ msg: 'User already exist' }] });
-        }
-        //Encrypt password
-        const salt = await bcrypt.genSalt(10);
-        password = await bcrypt.hash(password, salt);
-        console.log(password, "<<<pass")
-        console.log({ fname, lname, telno, gender, IDCardNo, email, password }, "<<<user2")
-        let newUser = await User.create({
-            FNAME: fname,
-            LNAME: lname,
-            TELNO: telno,
-            GENDER: gender,
-            IDCARDNO: IDCardNo,
-            EMAIL: email,
-            PASSWORD: password,
-        });
-        console.log(newUser)
-        //Return jsonwebtoken
-        const payload = {
-            User: await User.findOne({
-                attributes: ['USERID'],
-                where: {
-                    EMAIL: email
-                }
-            })
-        };
-        console.log(payload)
-        // jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 360000000 });
-        let token = jwt.sign(payload, "sectret");
-        console.log(token)
-    } catch (err) {
-        console.log(err.message);
-        res.status(500).send('Server error');
+  var { fname, lname, telno, gender, IDCardNo, email, password } = req.body;
+  try {
+    let user = await User.findOne({
+      attributes: ['EMAIL'],
+      where: {
+        EMAIL: email,
+      },
+    });
+    console.log(
+      { fname, lname, telno, gender, IDCardNo, email, password },
+      '<<<user'
+    );
+    if (user) {
+      return res.status(400).json({ errors: [{ msg: 'User already exist' }] });
     }
+    //Encrypt password
+    const salt = await bcrypt.genSalt(10);
+    password = await bcrypt.hash(password, salt);
+    console.log(password, '<<<pass');
+    console.log(
+      { fname, lname, telno, gender, IDCardNo, email, password },
+      '<<<user2'
+    );
+    let newUser = await User.create({
+      FNAME: fname,
+      LNAME: lname,
+      TELNO: telno,
+      GENDER: gender,
+      IDCARDNO: IDCardNo,
+      EMAIL: email,
+      PASSWORD: password,
+    });
+    console.log(newUser);
+    //Return jsonwebtoken
+    const payload = {
+      User: await User.findOne({
+        attributes: ['USERID'],
+        where: {
+          EMAIL: email,
+        },
+      }),
+    };
+    console.log(payload);
+    // jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 360000000 });
+    let token = jwt.sign(payload, 'sectret');
+    console.log(token);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server error');
+  }
 }
 
 module.exports = { USER_REGISTER };
-
-// exports.create = (req, res) => {
-//   const user = {
-//     FNAME: req.body.fname ? req.body.fname : false,
-//     LNAME: req.body.lname ? req.body.lname : false,
-//     TELNO: req.body.telno ? req.body.telno : false,
-//     GENDER: req.body.gender ? req.body.gender : false,
-//     IDCARDNO: req.body.idCardNo ? req.body.idCardNo : false,
-//     EMAIL: req.body.email ? req.body.email : false,
-//     PASSWORD: req.body.password ? req.body.password : false,
-//     PERSONALCODE: req.body.personalcode ? req.body.personalcode : false,
-//     ROLEID: req.body.roleid ? req.body.roleid : false,
-//   };
-
-//   users
-//     .create(user)
-//     .then((data) => {
-//       res.send(data);
-//     })
-//     .catch((err) => {
-//       res.status(500).send({
-//         message: err.message,
-//       });
-//     });
-// };

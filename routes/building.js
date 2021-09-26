@@ -8,3 +8,5 @@ router.get('/:dormID', async (req, res) => {
   const buildings = await FIND_BUILDINGS(dormID);
   res.json(buildings);
 });
+
+module.exports = router;
