@@ -10,10 +10,15 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-  res.json({
-    message: 'API Running',
-  });
+// app.get('/', (req, res) => {
+//   res.json({
+//     message: 'API Running',
+//   });
+// });
+
+// Connecting to Frontend
+app.get('/', function (req, res) {
+  res.redirect('https://adorminis.netlify.app/');
 });
 
 //Define Route
@@ -40,8 +45,3 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);
 });
-
-//Connecting to Frontend
-// app.get("/", function (req, res) {
-//   res.redirect("https://adorminis.netlify.app/");
-// });
